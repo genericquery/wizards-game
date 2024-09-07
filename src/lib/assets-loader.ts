@@ -17,6 +17,5 @@ export class AssetsLoader {
 
   async loadAssets() {
     await Assets.load(this.assetsToLoad);
-    console.log(Assets.cache);
   }
 }

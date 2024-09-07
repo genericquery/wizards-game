@@ -1,0 +1,32 @@
+/* tslint:disable */
+/* eslint-disable */
+import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { StrictHttpResponse } from '../../strict-http-response';
+import { RequestBuilder } from '../../request-builder';
+
+import { AddPlayerDto } from '../../models/add-player-dto';
+import { Player } from '../../models/player';
+
+export interface ApiGameAddPlayerPost$Plain$Params {
+      body?: AddPlayerDto
+}
+
+export function apiGameAddPlayerPost$Plain(http: HttpClient, rootUrl: string, params?: ApiGameAddPlayerPost$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Player>> {
+  const rb = new RequestBuilder(rootUrl, apiGameAddPlayerPost$Plain.PATH, 'post');
+  if (params) {
+    rb.body(params.body, 'application/*+json');
+  }
+
+  return http.request(
+    rb.build({ responseType: 'text', accept: 'text/plain', context })
+  ).pipe(
+    filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+    map((r: HttpResponse<any>) => {
+      return r as StrictHttpResponse<Player>;
+    })
+  );
+}
+
+apiGameAddPlayerPost$Plain.PATH = '/api/Game/AddPlayer';

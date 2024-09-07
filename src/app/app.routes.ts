@@ -6,7 +6,11 @@ export const routes: Routes = [
     loadComponent: () => import('../pages').then((x) => x.HubComponent),
   },
   {
-    path: 'game',
+    path: 'game/:gameId',
     loadComponent: () => import('../pages').then((x) => x.GameComponent),
+  },
+  {
+    path: 'lobby/:gameId',
+    loadComponent: () => import('../pages').then((x) => x.LobbyComponent),
   },
 ];

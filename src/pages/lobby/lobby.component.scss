@@ -1,0 +1,52 @@
+.hub {
+  @apply flex flex-row items-center justify-center h-full w-full text-red-600;
+  background: url("/sprites/scroll.svg") no-repeat center;
+  position: relative;
+
+  &__form {
+    @apply px-4 py-8;
+    width: 100%;
+    height: 100%;
+    max-width: 880px;
+    max-height: 680px;
+  }
+
+  &__input {
+    @apply border-b-2 border-b-orange-500 bg-transparent outline-none text-blue-700;
+    &::-webkit-input-placeholder {
+      @apply text-blue-600;
+    }
+  }
+
+  &__sides {
+    @apply flex gap-4;
+  }
+
+  &__side {
+    @apply flex flex-col items-center justify-center flex-1;
+  }
+}
+
+.wizards {
+  @apply flex flex-col gap-2 mb-4;
+}
+
+.wizard {
+  @apply border-2 border-transparent hover:border-red-400 cursor-pointer;
+
+  &_selected {
+    @apply border-red-600;
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__image {
+    @apply w-20;
+  }
+
+  &__name {
+    @apply text-center;
+  }
+}

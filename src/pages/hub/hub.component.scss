@@ -1,0 +1,8 @@
+.hub {
+  @apply flex flex-col items-center justify-center h-full w-full text-red-600;
+  background: url("/sprites/scroll.svg") no-repeat center;
+
+  &__title {
+    @apply text-4xl mb-10;
+  }
+}

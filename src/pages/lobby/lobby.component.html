@@ -1,0 +1,73 @@
+<div class="hub">
+  <form class="hub__form w-1/2" [formGroup]="playerForm">
+    <!-- {{ state$ | async | json }} -->
+    <div class="flex flex-row mb-4 items-center">
+      <label class="mr-4">
+        <input
+          type="text"
+          class="hub__input"
+          placeholder="Введите ваше имя"
+          formControlName="playerName"
+        />
+      </label>
+      <div>
+        <div>Выберите команду:</div>
+        <div class="hub__sides">
+          @for (side of sides; track $index) {
+          <label class="hub__side">
+            <input
+              type="radio"
+              name="sideType"
+              [value]="side.value"
+              class="wizard__input"
+              formControlName="sideType"
+            />
+            <div
+              class="side__image w-full h-9"
+              [ngClass]="
+                isSideSelected(side.value)
+                  ? side.activeClassName
+                  : side.className
+              "
+            ></div>
+          </label>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-row">
+      <div class="wizards">
+        @for (wizard of wizards; track $index) {
+        <label
+          class="wizard"
+          [class.wizard_selected]="isWizardSelected(wizard.value)"
+        >
+          <input
+            type="radio"
+            name="magicType"
+            [value]="wizard.value"
+            class="wizard__input"
+            formControlName="magicType"
+          />
+          <img [src]="wizard.image" [alt]="wizard.name" class="wizard__image" />
+          <div class="wizard__name">{{ wizard.name }}</div>
+        </label>
+        }
+      </div>
+      <div class="flex-1 border-r-2 border-orange-500 mr-4">asdasdasd</div>
+      <div class="flex-1">
+        @for (user of greenTeam$ | async; track $index) {
+        <div class="text-green-500">{{ user }}</div>
+        } @for (user of redTeam$ | async; track $index) {
+        <div class="text-red-500">{{ user }}</div>
+        }
+      </div>
+    </div>
+    <button class="button button_small mt-4 ml-4" (click)="addPlayer()">
+      Присоединиться к команде
+    </button>
+    <button class="button button_small mt-4 ml-4" (click)="startMatch()">
+      Стартовать игру
+    </button>
+  </form>
+</div>

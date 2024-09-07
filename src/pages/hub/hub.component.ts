@@ -1,4 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { GameService } from '../../api/services';
+import { take } from 'rxjs';
+import { LocalStorage } from '../../shared';
+import { currentGameIdKey } from '../../shared/constants';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'wiz-hub',
@@ -8,5 +13,17 @@ import { Component } from '@angular/core';
   styleUrl: './hub.component.scss',
 })
 export class HubComponent {
-  createGame() {}
+  gameService = inject(GameService);
+  localStorage = inject(LocalStorage);
+  router = inject(Router);
+
+  createGame() {
+    this.gameService
+      .apiGameCreateMatchPost$Json()
+      .pipe(take(1))
+      .subscribe((gameId: string) => {
+        this.localStorage.setItem(currentGameIdKey, gameId);
+        this.router.navigate(['/lobby', gameId]);
+      });
+  }
 }

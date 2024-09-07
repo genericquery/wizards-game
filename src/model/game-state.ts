@@ -1,9 +1,10 @@
+import { Player } from '../api/models';
 import { MagicType, Position, Side, Vector } from './api.model';
 
 export interface GameState {
   id: string;
   isMatchStarted: boolean;
-  players: Record<string, GamePlayerState>;
+  players: Record<string, Player>;
   bullets: Record<string, GameBulletState>;
 }
 
