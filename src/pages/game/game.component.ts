@@ -25,12 +25,19 @@ export class GameComponent implements OnInit, AfterViewInit {
 
   pixiApp = new Application();
 
-  players = signal<Pawn[]>([new Pawn(PawnType.Air)]);
+  players = signal<Pawn[]>([]);
 
   @ViewChild('gameCanvas') gameCanvas!: ElementRef<HTMLDivElement>;
 
   async ngOnInit(): Promise<void> {
-    this.assetsLoader.loadAssets();
+    await this.assetsLoader.loadAssets();
+    this.players.set([new Pawn(PawnType.Flame)]);
+    this.players().forEach((x) => {
+      console.log(x.sprite);
+      x.sprite.anchor.x = 1;
+      x.sprite.scale.x *= -1;
+      this.pixiApp.stage.addChild(x.sprite);
+    });
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -40,5 +47,9 @@ export class GameComponent implements OnInit, AfterViewInit {
       this.gameCanvas.nativeElement,
       this.pixiApp?.canvas
     );
+  }
+
+  drawPlayer(pawn: Pawn) {
+    pawn.sprite;
   }
 }
