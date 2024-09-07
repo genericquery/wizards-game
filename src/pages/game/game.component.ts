@@ -5,12 +5,14 @@ import {
   Component,
   ElementRef,
   inject,
+  OnDestroy,
   OnInit,
   Renderer2,
   signal,
   ViewChild,
 } from '@angular/core';
 import { Application, Assets } from 'pixi.js';
+import { GameHubService } from './game-hub.service';
 
 @Component({
   selector: 'wiz-game',
@@ -19,9 +21,10 @@ import { Application, Assets } from 'pixi.js';
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
 })
-export class GameComponent implements OnInit, AfterViewInit {
+export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   renderer2 = inject(Renderer2);
   assetsLoader = inject(AssetsLoader);
+  gameHubService = inject(GameHubService);
 
   pixiApp = new Application();
 
@@ -30,7 +33,9 @@ export class GameComponent implements OnInit, AfterViewInit {
   @ViewChild('gameCanvas') gameCanvas!: ElementRef<HTMLDivElement>;
 
   async ngOnInit(): Promise<void> {
+    this.gameHubService.connect();
     await this.assetsLoader.loadAssets();
+    this.gameHubService.connect();
     this.players.set([new Pawn(PawnType.Flame)]);
     this.players().forEach((x) => {
       console.log(x.sprite);
@@ -47,6 +52,10 @@ export class GameComponent implements OnInit, AfterViewInit {
       this.gameCanvas.nativeElement,
       this.pixiApp?.canvas
     );
+  }
+
+  ngOnDestroy(): void {
+    this.gameHubService.disconnect();
   }
 
   drawPlayer(pawn: Pawn) {
