@@ -6,11 +6,12 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { MatchListElement } from '../../models/match-list-element';
 
 export interface ApiGameGetMatchlistGet$Json$Params {
 }
 
-export function apiGameGetMatchlistGet$Json(http: HttpClient, rootUrl: string, params?: ApiGameGetMatchlistGet$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+export function apiGameGetMatchlistGet$Json(http: HttpClient, rootUrl: string, params?: ApiGameGetMatchlistGet$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<MatchListElement>>> {
   const rb = new RequestBuilder(rootUrl, apiGameGetMatchlistGet$Json.PATH, 'get');
   if (params) {
   }
@@ -20,7 +21,7 @@ export function apiGameGetMatchlistGet$Json(http: HttpClient, rootUrl: string, p
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<string>>;
+      return r as StrictHttpResponse<Array<MatchListElement>>;
     })
   );
 }

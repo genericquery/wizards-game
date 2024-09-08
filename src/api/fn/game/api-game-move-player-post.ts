@@ -6,11 +6,11 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Vector } from '../../models/vector';
+import { MovementAxis } from '../../models/movement-axis';
 
 export interface ApiGameMovePlayerPost$Params {
   playerId?: string;
-      body?: Vector
+      body?: MovementAxis
 }
 
 export function apiGameMovePlayerPost(http: HttpClient, rootUrl: string, params?: ApiGameMovePlayerPost$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {

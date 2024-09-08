@@ -1,18 +1,20 @@
 /* tslint:disable */
 /* eslint-disable */
 import { MagicType } from '../models/magic-type';
+import { MovementAxis } from '../models/movement-axis';
 import { ObjectPosition } from '../models/object-position';
 import { SideType } from '../models/side-type';
-import { Vector } from '../models/vector';
 export interface Player {
-  eyeDirection?: Vector;
+  eyeDirection?: MovementAxis;
   healthPoints?: number;
   id?: string;
   isDefenced?: boolean;
+  isFillObelisk?: boolean;
   isOverPowered?: boolean;
   magicType?: MagicType;
+  movementAxis?: MovementAxis;
   name?: string | null;
   position?: ObjectPosition;
   side?: SideType;
-  vector?: Vector;
+  spawnPosition?: ObjectPosition;
 }

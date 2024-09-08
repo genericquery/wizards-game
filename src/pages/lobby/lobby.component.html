@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="flex flex-row">
-      <div class="wizards">
+      <div class="wizards mr-2">
         @for (wizard of wizards; track $index) {
         <label
           class="wizard"
@@ -54,7 +54,10 @@
         </label>
         }
       </div>
-      <div class="flex-1 border-r-2 border-orange-500 mr-4">asdasdasd</div>
+      <div
+        class="flex-1 border-r-2 border-orange-500 mr-4"
+        [innerHTML]="currentWizardText$ | async"
+      ></div>
       <div class="flex-1">
         @for (user of greenTeam$ | async; track $index) {
         <div class="text-green-500">{{ user }}</div>
@@ -66,8 +69,10 @@
     <button class="button button_small mt-4 ml-4" (click)="addPlayer()">
       Присоединиться к команде
     </button>
+    @if (isGameCreatedByCurrentUser()) {
     <button class="button button_small mt-4 ml-4" (click)="startMatch()">
       Стартовать игру
     </button>
+    }
   </form>
 </div>

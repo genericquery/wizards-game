@@ -34,6 +34,7 @@ import { ApiGamePlayerShootPlayerIdPost$Params } from '../fn/game/api-game-playe
 import { apiGameStartMatchMatchIdPost } from '../fn/game/api-game-start-match-match-id-post';
 import { ApiGameStartMatchMatchIdPost$Params } from '../fn/game/api-game-start-match-match-id-post';
 import { GameMatch } from '../models/game-match';
+import { MatchListElement } from '../models/match-list-element';
 import { Player } from '../models/player';
 
 @Injectable({ providedIn: 'root' })
@@ -195,7 +196,7 @@ export class GameService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGameGetMatchlistGet$Plain$Response(params?: ApiGameGetMatchlistGet$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+  apiGameGetMatchlistGet$Plain$Response(params?: ApiGameGetMatchlistGet$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<MatchListElement>>> {
     return apiGameGetMatchlistGet$Plain(this.http, this.rootUrl, params, context);
   }
 
@@ -205,9 +206,9 @@ export class GameService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGameGetMatchlistGet$Plain(params?: ApiGameGetMatchlistGet$Plain$Params, context?: HttpContext): Observable<Array<string>> {
+  apiGameGetMatchlistGet$Plain(params?: ApiGameGetMatchlistGet$Plain$Params, context?: HttpContext): Observable<Array<MatchListElement>> {
     return this.apiGameGetMatchlistGet$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
+      map((r: StrictHttpResponse<Array<MatchListElement>>): Array<MatchListElement> => r.body)
     );
   }
 
@@ -217,7 +218,7 @@ export class GameService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGameGetMatchlistGet$Json$Response(params?: ApiGameGetMatchlistGet$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
+  apiGameGetMatchlistGet$Json$Response(params?: ApiGameGetMatchlistGet$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<MatchListElement>>> {
     return apiGameGetMatchlistGet$Json(this.http, this.rootUrl, params, context);
   }
 
@@ -227,9 +228,9 @@ export class GameService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGameGetMatchlistGet$Json(params?: ApiGameGetMatchlistGet$Json$Params, context?: HttpContext): Observable<Array<string>> {
+  apiGameGetMatchlistGet$Json(params?: ApiGameGetMatchlistGet$Json$Params, context?: HttpContext): Observable<Array<MatchListElement>> {
     return this.apiGameGetMatchlistGet$Json$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<string>>): Array<string> => r.body)
+      map((r: StrictHttpResponse<Array<MatchListElement>>): Array<MatchListElement> => r.body)
     );
   }
 

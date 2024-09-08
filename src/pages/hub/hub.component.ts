@@ -4,6 +4,7 @@ import { take } from 'rxjs';
 import { LocalStorage } from '../../shared';
 import { currentGameIdKey } from '../../shared/constants';
 import { Router } from '@angular/router';
+import { GameHubService } from '../game/game-hub.service';
 
 @Component({
   selector: 'wiz-hub',
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
 })
 export class HubComponent {
   gameService = inject(GameService);
+  gameHubService = inject(GameHubService);
   localStorage = inject(LocalStorage);
   router = inject(Router);
 
@@ -23,6 +25,7 @@ export class HubComponent {
       .pipe(take(1))
       .subscribe((gameId: string) => {
         this.localStorage.setItem(currentGameIdKey, gameId);
+        this.gameHubService.addGameIdToCreatedByUser(gameId);
         this.router.navigate(['/lobby', gameId]);
       });
   }

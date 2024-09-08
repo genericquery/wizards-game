@@ -2,8 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { BehaviorSubject, map, Subject } from 'rxjs';
 import { GameState } from '../../model';
-import { currentPlayerIdKey, LocalStorage } from '../../shared';
-import { Vector } from '../../api/models';
+import {
+  createdByUserGameIdsKey,
+  currentPlayerIdKey,
+  LocalStorage,
+} from '../../shared';
+import { MovementAxis } from '../../api/models';
 
 export interface Teams {
   redTeam: string[];
@@ -32,7 +36,9 @@ export class GameHubService {
       this.connection.on('GameState', (message: GameState) => {
         this.state$.next(message);
         setTimeout(() => {
-          this.GetPlayerState(this.playerId$.value as string);
+          if (message.winner == null) {
+            this.GetPlayerState(this.playerId$.value as string);
+          }
         }, 10);
       });
 
@@ -72,7 +78,47 @@ export class GameHubService {
     this.connection?.invoke('GetPlayersListAsync', matchId).then((x) => {});
   }
 
-  MovePlayer(vector: Vector | undefined) {
+  MovePlayer(vector: MovementAxis) {
     this.connection?.invoke('MovePlayer', this.playerId$.value, vector);
+  }
+
+  addGameIdToCreatedByUser(matchId: string) {
+    let createdByUserGames = this.getCreatedByCurrentUserGames();
+
+    createdByUserGames.push(matchId);
+
+    this.localStorage.setItem(
+      createdByUserGameIdsKey,
+      JSON.stringify(createdByUserGames)
+    );
+  }
+
+  private getCreatedByCurrentUserGames(): string[] {
+    const gamesString = this.localStorage.getItem(createdByUserGameIdsKey);
+    return gamesString ? JSON.parse(gamesString) : [];
+  }
+
+  isGameCreatedByCurrentUser(matchId: string) {
+    const games = this.getCreatedByCurrentUserGames();
+    return games.includes(matchId);
+  }
+
+  Shoot() {
+    this.connection?.invoke('PlayerShoot', this.playerId$.value);
+  }
+
+  DeffecncePlayer(isDeffend: boolean) {
+    this.connection?.invoke(
+      isDeffend ? 'DefendPlayerDown' : 'DefendPlayerUp',
+      this.playerId$.value
+    );
+  }
+
+  FillObelisk(isFilled: boolean) {
+    console.log({ isFilled });
+    this.connection?.invoke(
+      isFilled ? 'FillObeliskDown' : 'FillObeliskUp',
+      this.playerId$.value
+    );
   }
 }

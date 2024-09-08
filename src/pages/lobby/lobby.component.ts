@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
 import { GameHubService } from '../game/game-hub.service';
 import { AsyncPipe, CommonModule, JsonPipe } from '@angular/common';
 import {
@@ -10,8 +10,10 @@ import {
 import { AddPlayerDto, SideType } from '../../api/models';
 import { MagicType } from '../../model/api.model';
 import { GameService } from '../../api/services';
-import { take } from 'rxjs';
+import { map, pairwise, take, takeUntil, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { texts } from '../../shared';
 
 type PlayerForm = {
   matchId: FormControl<string | null>;
@@ -37,6 +39,7 @@ export class LobbyComponent implements OnInit {
   gameService = inject(GameHubService);
   apiGameService = inject(GameService);
   router = inject(Router);
+  destroyRef = inject(DestroyRef);
 
   private _gameId: string | undefined;
 
@@ -59,6 +62,21 @@ export class LobbyComponent implements OnInit {
     sideType: new FormControl(null),
     magicType: new FormControl(null),
   });
+
+  currentWizardText$ = this.playerForm.valueChanges.pipe(
+    tap((x) =>
+      console.log(
+        x,
+        texts.wizardDescriptions[x.magicType as MagicType],
+        texts.wizardDescriptions
+      )
+    ),
+    map((x) =>
+      x.magicType !== undefined
+        ? texts.wizardDescriptions[x.magicType as MagicType]
+        : ''
+    )
+  );
 
   wizards = [
     {
@@ -105,8 +123,23 @@ export class LobbyComponent implements OnInit {
     return this.playerForm.get('sideType')?.value === side;
   }
 
+  isGameCreatedByCurrentUser() {
+    return this.gameService.isGameCreatedByCurrentUser(this._gameId as string);
+  }
+
   ngOnInit(): void {
     this.gameService.connect();
+    this.state$
+      .pipe(
+        map((x) => x?.isMatchStarted ?? false),
+        takeUntilDestroyed(this.destroyRef),
+        pairwise()
+      )
+      .subscribe(([prevStart, currentStart]) => {
+        if (prevStart === false && currentStart === true) {
+          this.navigateToGameScreen();
+        }
+      });
     setTimeout(() => {
       this.gameService.GetPlayers(this._gameId as string);
     }, 1000);
@@ -133,6 +166,10 @@ export class LobbyComponent implements OnInit {
         matchId: this._gameId as string,
       })
       .pipe(take(1))
-      .subscribe(() => this.router.navigate(['/game', this._gameId as string]));
+      .subscribe(() => this.navigateToGameScreen());
+  }
+
+  private navigateToGameScreen(): void {
+    this.router.navigate(['/game', this._gameId as string]);
   }
 }
