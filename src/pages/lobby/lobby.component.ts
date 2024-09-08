@@ -6,6 +6,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { AddPlayerDto, SideType } from '../../api/models';
 import { MagicType } from '../../model/api.model';
@@ -42,6 +43,7 @@ export class LobbyComponent implements OnInit {
   destroyRef = inject(DestroyRef);
 
   private _gameId: string | undefined;
+  errorMessage?: string;
 
   @Input() set gameId(gameId: string) {
     this._gameId = gameId;
@@ -57,20 +59,13 @@ export class LobbyComponent implements OnInit {
   //   redUsers$ = this.gameService.
 
   playerForm = new FormGroup<PlayerForm>({
-    matchId: new FormControl(null),
-    playerName: new FormControl(null),
-    sideType: new FormControl(null),
-    magicType: new FormControl(null),
+    matchId: new FormControl(null, [Validators.required]),
+    playerName: new FormControl(null, [Validators.required]),
+    sideType: new FormControl(null, [Validators.required]),
+    magicType: new FormControl(null, [Validators.required]),
   });
 
   currentWizardText$ = this.playerForm.valueChanges.pipe(
-    tap((x) =>
-      console.log(
-        x,
-        texts.wizardDescriptions[x.magicType as MagicType],
-        texts.wizardDescriptions
-      )
-    ),
     map((x) =>
       x.magicType !== undefined
         ? texts.wizardDescriptions[x.magicType as MagicType]
@@ -146,6 +141,7 @@ export class LobbyComponent implements OnInit {
   }
 
   addPlayer() {
+    this.errorMessage = undefined;
     if (this.playerForm.valid) {
       this.apiGameService
         .apiGameAddPlayerPost$Json({
@@ -157,6 +153,22 @@ export class LobbyComponent implements OnInit {
             this.gameService.GetPlayerState(response.id);
           }
         });
+    } else {
+      if (this.playerForm.get('matchId')?.hasError('required')) {
+        this.errorMessage = 'Попробуйте пересоздать игру';
+      }
+
+      if (this.playerForm.get('playerName')?.hasError('required')) {
+        this.errorMessage = 'Вы не ввели имя игрока';
+      }
+
+      if (this.playerForm.get('side')?.hasError('required')) {
+        this.errorMessage = 'Вы не выбрали команду';
+      }
+
+      if (this.playerForm.get('magicType')?.hasError('required')) {
+        this.errorMessage = 'Вы не выбрали мага';
+      }
     }
   }
 

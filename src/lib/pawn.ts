@@ -46,11 +46,9 @@ export class Pawn {
   setPosition(x: number, y: number) {
     this.container.x = x;
     this.container.y = y;
-    console.log(this.shield);
   }
 
   setEyeDirection(eyeDirection: number) {
-    console.log(eyeDirection, this.eyeDirection);
     if (eyeDirection !== 0 && eyeDirection !== this.eyeDirection) {
       this.sprite.anchor.x = 0.5;
       this.sprite.scale.x *= -1;
@@ -60,12 +58,8 @@ export class Pawn {
 
   getShieldCords(player: Player) {
     return {
-      x:
-        // (player.position?.x as number) +
-        (player.position?.width as number) / 2 - 100,
-      y:
-        // (player.position?.y as number) +
-        (player.position?.height as number) / 2 - 34,
+      x: (player.position?.width as number) / 2 - 100,
+      y: (player.position?.height as number) / 2 - 34,
     };
   }
 

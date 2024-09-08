@@ -115,7 +115,6 @@ export class GameHubService {
   }
 
   FillObelisk(isFilled: boolean) {
-    console.log({ isFilled });
     this.connection?.invoke(
       isFilled ? 'FillObeliskDown' : 'FillObeliskUp',
       this.playerId$.value

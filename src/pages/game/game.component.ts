@@ -63,7 +63,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   progressBar?: AppProgressBar;
   progressText?: BitmapText;
   winText?: BitmapText;
-  isGameOver: boolean;
 
   async ngOnInit(): Promise<void> {
     this.gameHubService.connect();
@@ -71,129 +70,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.gameHubService.GetPlayerState(this.playerId as string);
     }, 1000);
-    this.bg = Sprite.from('map');
-    // this.bg.x = 0;
-    // this.bg.y = 0;
-    // this.bg.anchor.set(0.5);
-    this.bg.width = this.pixiApp.screen.width;
-    this.bg.height = this.pixiApp.screen.height;
-    this.progressBar = new AppProgressBar();
-    this.progressText = new BitmapText({ text: this.getProgressText(0) });
-    this.progressText.x = 600;
-    this.progressText.y = 250;
-    // this.bg.scale.set(10, 10);
-    this.obeliskProgress = new ProgressBar({
-      bg: 'map',
-      fill: 'green',
-      progress: 0.7,
-    });
-    this.progressBar.bar.x = 500;
-    this.progressBar.bar.y = 200;
-    this.obeliskArea = Sprite.from('obelisk_area');
-    this.obeliskArea.y = 469;
-    this.obeliskArea.x = 470;
-    this.obeliskArea.width = 660;
-    this.obeliskArea.height = 246;
-    console.log(this.obeliskProgress);
-    this.pixiApp.stage.addChild(this.bg);
-    this.pixiApp.stage.addChild(this.obeliskArea);
-    this.pixiApp.stage.addChild(this.progressText);
-    // this.pixiApp.stage.addChild(this.obeliskProgress);
-    this.pixiApp.stage.addChild(this.playersContainer);
-    this.pixiApp.stage.addChild(this.bulletsContainer);
-    this.gameHubService.state$
-      .pipe(takeUntilDestroyed(this.destoryRef))
-      .subscribe((gameState) => {
-        if (gameState?.players) {
-          Object.values(gameState?.players).forEach((x) => {
-            const playerId = x.id as string;
-            let playerSprite = this.playersContainer.getChildByLabel(playerId);
-            if (!this.playersContainer.getChildByLabel(playerId)) {
-              this.players[playerId] = new Pawn(x);
-              playerSprite = this.playersContainer.addChild(
-                this.players[playerId].container
-              );
-              //   playerSprite.width = x.position?.width as number;
-              //   playerSprite.height = x.position?.height as number;
-            }
-            this.players[playerId].setPosition(
-              x.position?.x as number,
-              x.position?.y as number
-            );
-            this.players[playerId].setDefenced(x.isDefenced);
-            if (x.eyeDirection?.x !== 0) {
-              this.players[playerId].setEyeDirection(
-                x.eyeDirection?.x as number
-              );
-            }
-          });
-        }
-
-        if (gameState?.bullets) {
-          Object.keys(gameState.bullets).forEach((bulletId) => {
-            const bullet = gameState.bullets[bulletId];
-            Sprite.from(
-              `strike_${getMagicType(bullet.magicType as MagicType)}`
-            );
-            if (!this.bullets[bulletId]) {
-              this.bullets[bulletId] = new BulletPawn(bullet);
-              this.bullets[bulletId].sprite.width = bullet.position
-                ?.width as number;
-              this.bullets[bulletId].sprite.height = bullet.position
-                ?.height as number;
-              this.bulletsContainer.addChild(this.bullets[bulletId].sprite);
-            }
-
-            this.bullets[bulletId].setPosition(
-              bullet.position?.x as number,
-              bullet.position?.y as number
-            );
-          });
-
-          Object.keys(this.bullets).forEach((bulletId) => {
-            if (!gameState.bullets[bulletId]) {
-              this.bulletsContainer.removeChild(this.bullets[bulletId].sprite);
-              delete this.bullets[bulletId];
-            }
-          });
-          if (this.progressText) {
-            this.progressText.text = this.getProgressText(
-              gameState.obelisk.value ?? 0
-            );
-          }
-        }
-
-        if (gameState?.obelisk) {
-          this.obelisk = Sprite.from('obelisk');
-          this.obelisk.x = gameState.obelisk.position?.x as number;
-          this.obelisk.y = gameState.obelisk.position?.y as number;
-          this.obelisk.width = gameState.obelisk.position?.width as number;
-          this.obelisk.height = gameState.obelisk.position?.height as number;
-          this.obelisk.label = 'obelisk';
-          //   this.obelisk.anchor.set(1, 1);
-
-          if (!this.pixiApp.stage.getChildByLabel('obelisk')) {
-            this.pixiApp.stage.addChild(this.obelisk);
-          }
-        }
-
-        if (typeof gameState?.winner === 'number') {
-          this.winText = new BitmapText({
-            text: `Победила ${this.getWinnerCommand(
-              gameState?.winner ?? 0
-            )} команда`,
-            style: {
-              fontSize: 55,
-              align: 'center',
-            },
-          });
-
-          this.winText.x = 400;
-          this.winText.y = 200;
-          this.pixiApp.stage.addChild(this.winText);
-          this.isGameOver = true;
-        }
-      });
   }
 
   getWinnerCommand(winner: number | undefined) {
@@ -206,6 +82,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async ngAfterViewInit(): Promise<void> {
     this.pixiApp = new Application();
+
     await this.pixiApp.init({
       background: '#ffffff',
       autoDensity: true,
@@ -216,6 +93,128 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       this.gameCanvas.nativeElement,
       this.pixiApp?.canvas
     );
+    setTimeout(() => {
+      this.bg = Sprite.from('map');
+      this.bg.width = this.pixiApp.screen.width;
+      this.bg.height = this.pixiApp.screen.height;
+      this.progressBar = new AppProgressBar();
+      this.progressText = new BitmapText({ text: this.getProgressText(0) });
+      this.progressText.x = 600;
+      this.progressText.y = 250;
+      this.obeliskProgress = new ProgressBar({
+        bg: 'map',
+        fill: 'green',
+        progress: 0.7,
+      });
+      this.progressBar.bar.x = 500;
+      this.progressBar.bar.y = 200;
+      this.obeliskArea = Sprite.from('obelisk_area');
+      this.obeliskArea.y = 469;
+      this.obeliskArea.x = 470;
+      this.obeliskArea.width = 660;
+      this.obeliskArea.height = 246;
+      this.pixiApp.stage.addChild(this.bg);
+      this.pixiApp.stage.addChild(this.obeliskArea);
+      this.pixiApp.stage.addChild(this.progressText);
+      // this.pixiApp.stage.addChild(this.obeliskProgress);
+      this.pixiApp.stage.addChild(this.playersContainer);
+      this.pixiApp.stage.addChild(this.bulletsContainer);
+      this.gameHubService.state$
+        .pipe(takeUntilDestroyed(this.destoryRef))
+        .subscribe((gameState) => {
+          if (gameState?.players) {
+            Object.values(gameState?.players).forEach((x) => {
+              const playerId = x.id as string;
+              let playerSprite =
+                this.playersContainer.getChildByLabel(playerId);
+              if (!this.playersContainer.getChildByLabel(playerId)) {
+                this.players[playerId] = new Pawn(x);
+                playerSprite = this.playersContainer.addChild(
+                  this.players[playerId].container
+                );
+                //   playerSprite.width = x.position?.width as number;
+                //   playerSprite.height = x.position?.height as number;
+              }
+              this.players[playerId].setPosition(
+                x.position?.x as number,
+                x.position?.y as number
+              );
+              this.players[playerId].setDefenced(x.isDefenced);
+              if (x.eyeDirection?.x !== 0) {
+                this.players[playerId].setEyeDirection(
+                  x.eyeDirection?.x as number
+                );
+              }
+            });
+          }
+
+          if (gameState?.bullets) {
+            Object.keys(gameState.bullets).forEach((bulletId) => {
+              const bullet = gameState.bullets[bulletId];
+              Sprite.from(
+                `strike_${getMagicType(bullet.magicType as MagicType)}`
+              );
+              if (!this.bullets[bulletId]) {
+                this.bullets[bulletId] = new BulletPawn(bullet);
+                this.bullets[bulletId].sprite.width = bullet.position
+                  ?.width as number;
+                this.bullets[bulletId].sprite.height = bullet.position
+                  ?.height as number;
+                this.bulletsContainer.addChild(this.bullets[bulletId].sprite);
+              }
+
+              this.bullets[bulletId].setPosition(
+                bullet.position?.x as number,
+                bullet.position?.y as number
+              );
+            });
+
+            Object.keys(this.bullets).forEach((bulletId) => {
+              if (!gameState.bullets[bulletId]) {
+                this.bulletsContainer.removeChild(
+                  this.bullets[bulletId].sprite
+                );
+                delete this.bullets[bulletId];
+              }
+            });
+            if (this.progressText) {
+              this.progressText.text = this.getProgressText(
+                gameState.obelisk.value ?? 0
+              );
+            }
+          }
+
+          if (gameState?.obelisk) {
+            this.obelisk = Sprite.from('obelisk');
+            this.obelisk.x = gameState.obelisk.position?.x as number;
+            this.obelisk.y = gameState.obelisk.position?.y as number;
+            this.obelisk.width = gameState.obelisk.position?.width as number;
+            this.obelisk.height = gameState.obelisk.position?.height as number;
+            this.obelisk.label = 'obelisk';
+            //   this.obelisk.anchor.set(1, 1);
+
+            if (!this.pixiApp.stage.getChildByLabel('obelisk')) {
+              this.pixiApp.stage.addChild(this.obelisk);
+            }
+          }
+
+          if (typeof gameState?.winner === 'number') {
+            this.winText = new BitmapText({
+              text: `Победила ${this.getWinnerCommand(
+                gameState?.winner ?? 0
+              )} команда`,
+              style: {
+                fontSize: 55,
+                align: 'center',
+              },
+            });
+
+            this.winText.x = 400;
+            this.winText.y = 200;
+            this.pixiApp.stage.addChild(this.winText);
+          }
+        });
+    }, 100);
     interval(10)
       .pipe(takeUntilDestroyed(this.destoryRef))
       .subscribe(() => {

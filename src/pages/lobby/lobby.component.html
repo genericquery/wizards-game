@@ -1,6 +1,8 @@
 <div class="hub">
+  <div class="text-red-500">
+    {{ errorMessage }}
+  </div>
   <form class="hub__form w-1/2" [formGroup]="playerForm">
-    <!-- {{ state$ | async | json }} -->
     <div class="flex flex-row mb-4 items-center">
       <label class="mr-4">
         <input
